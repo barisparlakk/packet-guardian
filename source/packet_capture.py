@@ -212,7 +212,13 @@ if __name__ == "__main__":
     
     # Start capturing 50 packets (or stop with Ctrl+C)
     # You can add filters like: filter_exp="tcp port 80 or tcp port 443" #will add this feature too.
-    capturer.start_capture(count=50, timeout=30)
+
+    capturer.start_capture(count=250, timeout=None) #my default timeout is 30, Changing it to 250 for more complicated tests.
+    #instead we can specify what we can capture. 
+    # capturer.start_capture(count=50, filter_exp="tcp port 80 or tcp port 443") #this will only capture http/https
+    # capturer.start_capture(count=100, filter_exp="tcp") #this will only capture tcp
+    # capturer.start_capture(count=0, timeout=120) #with this, you can capture indefinitely, pressing ctrl+c will stop the process.
+
     
     # Print statistics
     capturer.print_statistics()
