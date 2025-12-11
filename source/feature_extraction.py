@@ -301,19 +301,19 @@ class FeatureExtractor:
         print("="*80)
         
         # Basic stats
-        print(f"\n📊 BASIC STATISTICS")
+        print(f"\n BASIC STATISTICS")
         print(f"   Total Packets: {len(self.df)}")
         print(f"   Packet Rate: {self.calculate_packet_rate():.2f} packets/second")
         print(f"   Capture Duration: {(self.df['timestamp'].max() - self.df['timestamp'].min()).total_seconds():.2f} seconds")
         
         # Protocol distribution
-        print(f"\n🔌 PROTOCOL DISTRIBUTION")
+        print(f"\n PROTOCOL DISTRIBUTION")
         proto_dist = self.get_protocol_distribution()
         for protocol, stats in proto_dist.items():
             print(f"   {protocol:10} : {stats['count']:4} packets ({stats['percentage']:.1f}%)")
         
         # Packet size stats
-        print(f"\n📦 PACKET SIZE STATISTICS")
+        print(f"\n PACKET SIZE STATISTICS")
         size_stats = self.calculate_packet_size_stats()
         print(f"   Mean Size: {size_stats['mean_size']:.2f} bytes")
         print(f"   Min Size: {size_stats['min_size']} bytes")
@@ -321,7 +321,7 @@ class FeatureExtractor:
         print(f"   Total Traffic: {size_stats['total_bytes']:,} bytes")
         
         # Top talkers
-        print(f"\n💬 TOP TALKERS")
+        print(f"\n TOP TALKERS")
         top_talkers = self.get_top_talkers(top_n=3)
         print(f"   Top Source IPs:")
         for ip, count in top_talkers['top_sources'].items():
@@ -331,29 +331,29 @@ class FeatureExtractor:
             print(f"      {ip:20} : {count} packets")
         
         # Port scan detection
-        print(f"\n🔍 PORT SCAN DETECTION")
+        print(f"\n PORT SCAN DETECTION")
         port_scans = self.detect_port_scan(threshold=5)
         if port_scans:
-            print(f"   ⚠️  {len(port_scans)} suspicious source(s) detected:")
+            print(f"   !!!  {len(port_scans)} suspicious source(s) detected:")
             for suspect in port_scans[:3]:
                 print(f"      {suspect['src_ip']:20} : {suspect['unique_ports_accessed']} unique ports accessed")
         else:
             print(f"   ✓ No suspicious port scanning detected")
         
         # TCP flags
-        print(f"\n🚩 TCP FLAG ANALYSIS")
+        print(f"\n TCP FLAG ANALYSIS")
         tcp_flags = self.analyze_tcp_flags()
         if 'flag_distribution' in tcp_flags:
             for flag, count in list(tcp_flags['flag_distribution'].items())[:5]:
                 print(f"   {flag:10} : {count} packets")
             if tcp_flags['syn_flood_risk']:
-                print(f"   ⚠️  Possible SYN flood detected!")
+                print(f"   !!!  Possible SYN flood detected!")
         
         # High-rate bursts
         print(f"\n⚡ HIGH-RATE BURST DETECTION")
         bursts = self.detect_high_rate_bursts()
         if bursts:
-            print(f"   ⚠️  {len(bursts)} high-rate burst(s) detected")
+            print(f"   !!!  {len(bursts)} high-rate burst(s) detected")
         else:
             print(f"   ✓ No high-rate bursts detected")
         
