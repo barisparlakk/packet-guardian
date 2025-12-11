@@ -468,7 +468,7 @@ for csv_file in glob.glob("../data/capture_*.csv"):
 
 ## Security Considerations
 
-⚠️ **Important Notes:**
+!!! **Important Notes:**
 - Only capture traffic on networks you own or have permission to monitor
 - Packet sniffing may be illegal on public/corporate networks without authorization
 - Handle captured data securely (may contain sensitive information)
