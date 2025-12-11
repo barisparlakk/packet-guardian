@@ -1,5 +1,5 @@
 """
-Smart Packet Sniffer - Graphical User Interface
+Packet Guardian - Smart Packet Sniffer - Graphical User Interface
 GUI wrapper for the packet sniffer application
 """
 
@@ -22,7 +22,7 @@ from visualizer import TrafficVisualizer
 class PacketSnifferGUI:
     def __init__(self, root):
         self.root = root
-        self.root.title("Smart Packet Sniffer with ML Anomaly Detection")
+        self.root.title("Packet Guardian - Smart Packet Sniffer with ML Anomaly Detection")
         self.root.geometry("900x700")
         self.root.resizable(True, True)
         
@@ -49,7 +49,7 @@ class PacketSnifferGUI:
         
         title_label = tk.Label(
             header_frame,
-            text="🔍 Smart Packet Sniffer",
+            text="🔍 Packet Guardian ",
             font=("Helvetica", 24, "bold"),
             bg="#2c3e50",
             fg="white"
