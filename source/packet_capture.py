@@ -1,8 +1,6 @@
 """
-
 Packet Capture Module
 Captures network packets and extracts basic information
-
 """
 
 from scapy.all import sniff, IP, TCP, UDP, ICMP, Raw
@@ -24,12 +22,11 @@ class PacketCapture:
         self.output_file = output_file
         self.packets_data = []
         self.packet_count = 0
-
+        
+        # Create data directory if it doesn't exist
         data_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data")
         os.makedirs(data_dir, exist_ok=True)
         self.data_dir = data_dir
-        
-        
         
     def parse_packet(self, packet):
         """
@@ -90,28 +87,41 @@ class PacketCapture:
         Args:
             packet: Scapy packet object
         """
-        self.packet_count += 1
-        packet_info = self.parse_packet(packet)
-        self.packets_data.append(packet_info)
-        
-        # Print packet summary
-        print(f"[{self.packet_count}] {packet_info['timestamp']} | "
-              f"{packet_info['protocol']:8} | "
-              f"{packet_info['src_ip']:15} -> {packet_info['dst_ip']:15} | "
-              f"Size: {packet_info['packet_size']:5} bytes")
+        try:
+            self.packet_count += 1
+            packet_info = self.parse_packet(packet)
+            self.packets_data.append(packet_info)
+            
+            # Safely format output with None checks
+            src_ip = packet_info['src_ip'] if packet_info['src_ip'] else 'N/A'
+            dst_ip = packet_info['dst_ip'] if packet_info['dst_ip'] else 'N/A'
+            protocol = packet_info['protocol'] if packet_info['protocol'] else 'Unknown'
+            
+            # Print packet summary
+            print(f"[{self.packet_count}] {packet_info['timestamp']} | "
+                  f"{protocol:8} | "
+                  f"{src_ip:15} -> {dst_ip:15} | "
+                  f"Size: {packet_info['packet_size']:5} bytes")
+        except Exception as e:
+            # Skip problematic packets silently
+            pass
     
-    def start_capture(self, count=100, timeout=60, filter_exp=None):
+    def start_capture(self, count=100, timeout=None, filter_exp=None):
         """
         Start capturing packets
         
         Args:
             count: Number of packets to capture (0 = infinite)
-            timeout: Timeout in seconds
+            timeout: Timeout in seconds (None = wait until count is reached)
             filter_exp: BPF filter expression (e.g., "tcp port 80")
         """
         print(f"\n{'='*80}")
         print(f"Starting packet capture on interface: {self.interface}")
         print(f"Capturing {count if count > 0 else 'unlimited'} packets...")
+        if timeout:
+            print(f"Timeout: {timeout} seconds")
+        else:
+            print(f"No timeout - will wait until {count} packets are captured")
         if filter_exp:
             print(f"Filter: {filter_exp}")
         print(f"{'='*80}\n")
@@ -210,15 +220,14 @@ if __name__ == "__main__":
     # Create packet capture instance
     capturer = PacketCapture(interface="en0", output_file="captured_packets.csv")
     
-    # Start capturing 50 packets (or stop with Ctrl+C)
-    # You can add filters like: filter_exp="tcp port 80 or tcp port 443" #will add this feature too.
-
-    capturer.start_capture(count=1000, timeout=None) #my default timeout is 30, Changing it to 250 for more complicated tests.
-    #instead we can specify what we can capture. 
-    # capturer.start_capture(count=50, filter_exp="tcp port 80 or tcp port 443") #this will only capture http/https
-    # capturer.start_capture(count=100, filter_exp="tcp") #this will only capture tcp
-    # capturer.start_capture(count=0, timeout=120) #with this, you can capture indefinitely, pressing ctrl+c will stop the process.
-
+    # Option 1: Capture exact number of packets (no timeout - will wait)
+    capturer.start_capture(count=250, timeout=None)
+    
+    # Option 2: Capture with timeout (stops after timeout even if not enough packets)
+    # capturer.start_capture(count=250, timeout=60)
+    
+    # Option 3: Capture with filter to get more packets
+    # capturer.start_capture(count=250, timeout=None, filter_exp="ip")
     
     # Print statistics
     capturer.print_statistics()
