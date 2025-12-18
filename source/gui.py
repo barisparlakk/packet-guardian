@@ -1,5 +1,5 @@
 """
-Packet Guardian - Smart Packet Sniffer - Graphical User Interface
+Packet Guardian - Graphical User Interface
 GUI wrapper for the packet sniffer application
 """
 
@@ -22,7 +22,7 @@ from visualizer import TrafficVisualizer
 class PacketSnifferGUI:
     def __init__(self, root):
         self.root = root
-        self.root.title("Packet Guardian - Smart Packet Sniffer with ML Anomaly Detection")
+        self.root.title("Packet Guardian")
         self.root.geometry("900x700")
         self.root.resizable(True, True)
         
@@ -49,7 +49,7 @@ class PacketSnifferGUI:
         
         title_label = tk.Label(
             header_frame,
-            text="🔍 Packet Guardian ",
+            text="Packet Guardian",
             font=("Helvetica", 24, "bold"),
             bg="#2c3e50",
             fg="white"
@@ -58,7 +58,7 @@ class PacketSnifferGUI:
         
         subtitle_label = tk.Label(
             header_frame,
-            text="ML-Based Network Anomaly Detection System",
+            text="Packet Guardian <> ML-Based Network Anomaly Detection System",
             font=("Helvetica", 11),
             bg="#2c3e50",
             fg="#ecf0f1"
@@ -369,15 +369,19 @@ class PacketSnifferGUI:
             try:
                 capturer = PacketCapture(interface=interface, output_file="captured_packets.csv")
                 
-                # Override callback to show in GUI
+                # Override callback to show in GUI with error handling
                 original_callback = capturer.packet_callback
                 def gui_callback(packet):
-                    original_callback(packet)
-                    if capturer.packet_count % 10 == 0:  # Update every 10 packets
-                        self.log_output(
-                            self.capture_output,
-                            f"Captured {capturer.packet_count} packets..."
-                        )
+                    try:
+                        original_callback(packet)
+                        if capturer.packet_count % 10 == 0:  # Update every 10 packets
+                            self.log_output(
+                                self.capture_output,
+                                f"Captured {capturer.packet_count} packets..."
+                            )
+                    except Exception as e:
+                        # Skip problematic packets
+                        pass
                 
                 capturer.packet_callback = gui_callback
                 capturer.start_capture(count=count, timeout=None, filter_exp=filter_exp)
